@@ -13,6 +13,11 @@ struct Adresat
     int id=0;
     string imie="", nazwisko="", numerTelefonu="", email="", adres="";
 };
+struct Uzytkownik
+{
+    int id;
+    string nazwa, haslo;
+};
 void wczytajKsiazkeAdresowa (vector <Adresat>& adresaci)
 {
     int ileKontakow=0;
@@ -263,50 +268,86 @@ void zapiszZmianyDoPliku (vector <Adresat>& adresaci)
 int main()
 {
     vector <Adresat> adresaci;
-    wczytajKsiazkeAdresowa(adresaci);
+    vector <Uzytkownik> uzytkownicy;
+    int idZalogowanegoUzytkownika = 0;
+    int iloscUzytkownikow = 0;
     char wybor;
+
     while(true)
     {
-        system("cls");
-        cout<< "1. Dodaj adresata" <<endl;
-        cout<< "2. Wyszukaj po imieniu" <<endl;
-        cout<< "3. Wyszukaj po nazwisku" <<endl;
-        cout<< "4. Wyswietl wszystkich adresatow" <<endl;
-        cout<< "5. Usun adresata" <<endl;
-        cout<< "6. Edytuj adresata" <<endl;
-        cout<< "9. Zakoncz program" <<endl;
-        cout<< "Twoj wybor: ";
-        cin>>wybor;
-        if (wybor== '1')
+        if (idZalogowanegoUzytkownika == 0)
         {
-            dodajNowyKontakt(adresaci);
+            system("cls");
+            cout<< "1. Rejestracja" <<endl;
+            cout<< "2. Logowanie" <<endl;
+            cout<< "9. Zakoncz program" <<endl;
+            cin>>wybor;
+
+            if (wybor== '1')
+            {
+                //iloscUzytkownikow = rejestracja(uzytkownicy,iloscUzytkownikow);
+            }
+            else if (wybor=='2')
+            {
+                //idZalogowanegoUzytkownika = logowanie(uzytkownicy, iloscUzytkownikow);
+                wczytajKsiazkeAdresowa(adresaci);
+                idZalogowanegoUzytkownika++;
+            }
+            else if (wybor=='9')
+            {
+                exit(0);
+            }
         }
-        else if (wybor=='2')
+        else
         {
-            szukajPoImieniu(adresaci);
+            system("cls");
+            cout<< "1. Dodaj adresata" <<endl;
+            cout<< "2. Wyszukaj po imieniu" <<endl;
+            cout<< "3. Wyszukaj po nazwisku" <<endl;
+            cout<< "4. Wyswietl wszystkich adresatow" <<endl;
+            cout<< "5. Usun adresata" <<endl;
+            cout<< "6. Edytuj adresata" <<endl;
+            cout<< "7. Zmiana hasla" <<endl;
+            cout<< "9. Wyloguj sie" <<endl;
+            cout<< "Twoj wybor: ";
+            cin>>wybor;
+            if (wybor== '1')
+            {
+                dodajNowyKontakt(adresaci);
+            }
+            else if (wybor=='2')
+            {
+                szukajPoImieniu(adresaci);
+            }
+            else if (wybor=='3')
+            {
+                szukajPoNazwisku(adresaci);
+            }
+            else if (wybor=='4')
+            {
+                wyswietlWszystkieKontakty(adresaci);
+            }
+            else if (wybor=='5')
+            {
+                usunKontakt(adresaci);
+                zapiszZmianyDoPliku(adresaci);
+            }
+            else if (wybor=='6')
+            {
+                edytujKontakt(adresaci);
+                zapiszZmianyDoPliku(adresaci);
+            }
+            else if (wybor=='7')
+            {
+                //zmianaHasla(uzytkownicy,iloscUzytkownikow, idZalogowanegoUzytkownika);
+            }
+            else if (wybor=='9')
+            {
+                system("cls");
+                idZalogowanegoUzytkownika = 0;
+            }
         }
-        else if (wybor=='3')
-        {
-            szukajPoNazwisku(adresaci);
-        }
-        else if (wybor=='4')
-        {
-            wyswietlWszystkieKontakty(adresaci);
-        }
-        else if (wybor=='5')
-        {
-            usunKontakt(adresaci);
-            zapiszZmianyDoPliku(adresaci);
-        }
-        else if (wybor=='6')
-        {
-            edytujKontakt(adresaci);
-            zapiszZmianyDoPliku(adresaci);
-        }
-        else if (wybor=='9')
-        {
-            exit(0);
-        }
+
     }
     return 0;
 }
