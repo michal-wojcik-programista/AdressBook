@@ -142,7 +142,6 @@ int wczytajKsiazkeAdresowa (vector <Adresat>& adresaci, int idZalogowanegoUzytko
                 adresyZpliku.push_back(wyraz);
             }
             ostatniNumerId = atoi(adresyZpliku[0].c_str());
-            cout<<ostatniNumerId<<" ";
             if (atoi(adresyZpliku[1].c_str()) == idZalogowanegoUzytkownika)
             {
                 bufor.idAdresata = atoi(adresyZpliku[0].c_str());
@@ -157,8 +156,6 @@ int wczytajKsiazkeAdresowa (vector <Adresat>& adresaci, int idZalogowanegoUzytko
             else adresyZpliku.clear();
         }
         plik.close();
-        cout<<ostatniNumerId<<" ";
-        system("pause");
         return ostatniNumerId;
     }
 }
@@ -353,25 +350,7 @@ void edytujKontakt (vector <Adresat>& adresaci)
     else if (wybor=='6')
         system("cls");
 }
-/*
-void zmianaHasla(vector <Uzytkownik>& uzytkownicy, int idZalogowanegoUzytkownika)
-{
-    string haslo;
-    cout<< "Podaj nowe haslo: ";
-    cin>>haslo;
-
-    for (int i=0; i<iloscUzytkownikow; i++)
-    {
-        if (uzytkownicy[i].idUzytkownika == idZalogowanegoUzytkownika)
-        {
-            uzytkownicy[i].haslo = haslo;
-            cout<< "Haslo zostalo zmienione" <<endl;
-            Sleep(1000);
-        }
-    }
-}
-*/
-void zapiszZmianyDoPliku (vector <Adresat>& adresaci)
+void zapiszZmianyWPlikuAdresaci (vector <Adresat>& adresaci)
 {
     int liczbaKontaktow = adresaci.size();
     fstream plik;
@@ -386,7 +365,40 @@ void zapiszZmianyDoPliku (vector <Adresat>& adresaci)
         plik<<adresaci[i].adres<<"|"<<endl;
     }
     plik.close();
-    cout<< "Zapisano zmiany w pliku.";
+    cout<< "Zapisano zmiany w pliku Adresaci.txt.";
+    Sleep(1000);
+}
+void zmianaHasla(vector <Uzytkownik>& uzytkownicy, int idZalogowanegoUzytkownika)
+{
+    int liczbaUzytkownikow = uzytkownicy.size();
+    string haslo;
+    cout<< "Podaj nowe haslo: ";
+    cin.sync();
+    getline(cin,haslo);
+
+    for (int i=0; i<liczbaUzytkownikow; i++)
+    {
+        if (uzytkownicy[i].idUzytkownika == idZalogowanegoUzytkownika)
+        {
+            uzytkownicy[i].haslo = haslo;
+            cout<< "Haslo zostalo zmienione" <<endl;
+            Sleep(1000);
+        }
+    }
+}
+void zapiszZmianyWPlikuUzytkownicy (vector <Uzytkownik>& uzytkownicy)
+{
+    int liczbaUzytkownikow = uzytkownicy.size();
+    fstream plik;
+    plik.open("Uzytkownicy.txt",ios::out | ios::trunc);
+    for (int i=0; i<liczbaUzytkownikow; i++)
+    {
+        plik<<uzytkownicy[i].idUzytkownika<<"|";
+        plik<<uzytkownicy[i].nazwa<<"|";
+        plik<<uzytkownicy[i].haslo<<"|"<<endl;
+    }
+    plik.close();
+    cout<< "Zapisano zmiany w pliku Uzytkownicy.txt.";
     Sleep(1000);
 }
 
@@ -416,8 +428,6 @@ int main()
             {
                 idZalogowanegoUzytkownika = logowanie(uzytkownicy);
                 ostatniId = wczytajKsiazkeAdresowa(adresaci, idZalogowanegoUzytkownika);
-                cout<<ostatniId<<" ";
-                system("pause");
             }
             else if (wybor=='9')
             {
@@ -456,16 +466,17 @@ int main()
             else if (wybor=='5')
             {
                 usunKontakt(adresaci);
-                zapiszZmianyDoPliku(adresaci);
+                zapiszZmianyWPlikuAdresaci(adresaci);
             }
             else if (wybor=='6')
             {
                 edytujKontakt(adresaci);
-                zapiszZmianyDoPliku(adresaci);
+                zapiszZmianyWPlikuAdresaci(adresaci);
             }
             else if (wybor=='7')
             {
-                //zmianaHasla(uzytkownicy, idZalogowanegoUzytkownika);
+                zmianaHasla(uzytkownicy, idZalogowanegoUzytkownika);
+                zapiszZmianyWPlikuUzytkownicy(uzytkownicy);
             }
             else if (wybor=='9')
             {
