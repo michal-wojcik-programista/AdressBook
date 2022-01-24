@@ -117,7 +117,7 @@ int logowanie(vector <Uzytkownik>& uzytkownicy)
     Sleep(1000);
     return 0;
 }
-void wczytajKsiazkeAdresowa (vector <Adresat>& adresaci)
+void wczytajKsiazkeAdresowa (vector <Adresat>& adresaci, int idZalogowanegoUzytkownika)
 {
     string linia;
     fstream plik;
@@ -125,6 +125,7 @@ void wczytajKsiazkeAdresowa (vector <Adresat>& adresaci)
     if (plik.good()==false)
     {
         cout<<"Nie znaleziono lub nie udalo sie otworzyc pliku Ksiazka adresowa!"<<endl;
+        cout<<"Nowy plik zostanie utworzony przy dodawaniu pierwszego adresata"<<endl;
         Sleep(1000);
     }
     else
@@ -139,26 +140,37 @@ void wczytajKsiazkeAdresowa (vector <Adresat>& adresaci)
             {
                 adresyZpliku.push_back(wyraz);
             }
-            bufor.idAdresata = atoi(adresyZpliku[0].c_str());
-            bufor.imie = adresyZpliku[1];
-            bufor.nazwisko = adresyZpliku[2];
-            bufor.numerTelefonu = adresyZpliku[3];
-            bufor.email = adresyZpliku[4];
-            bufor.adres = adresyZpliku[5];
-            adresaci.push_back(bufor);
-            adresyZpliku.clear();
+            if (atoi(adresyZpliku[1].c_str()) == idZalogowanegoUzytkownika)
+            {
+                bufor.idAdresata = atoi(adresyZpliku[0].c_str());
+                bufor.imie = adresyZpliku[2];
+                bufor.nazwisko = adresyZpliku[3];
+                bufor.numerTelefonu = adresyZpliku[4];
+                bufor.email = adresyZpliku[5];
+                bufor.adres = adresyZpliku[6];
+                adresaci.push_back(bufor);
+                adresyZpliku.clear();
+            }
+            else adresyZpliku.clear();
         }
         plik.close();
     }
 }
-void dodajNowyKontakt (vector <Adresat>& adresaci)
+int znajdzOstatnieId ()
+{
+    string wyraz;
+    fstream plik;
+    plik.open("Ksiazka adresowa.txt", ios::in);
+    plik.seekg(-2, std:ios_base::end);
+
+}
+void dodajNowyKontakt (vector <Adresat>& adresaci, int idZalogowanegoUzytkownika, int ostatniId)
 {
     int liczbaKontaktow = adresaci.size();
-    int ostatniID;
-    if (adresaci.size() == 0) ostatniID = 0;
-    else ostatniID = adresaci.back().idAdresata;
+    if (adresaci.size() == 0) ostatniId = 0;
+    else ostatniId = adresaci.back().idAdresata;
     adresaci.push_back(Adresat());
-    adresaci[liczbaKontaktow].idAdresata = ostatniID+1;
+    adresaci[liczbaKontaktow].idAdresata = ostatniId+1;
     cout<<"Podaj imie: ";
     cin>>adresaci[liczbaKontaktow].imie;
     cout<< "Podaj nazwisko: ";
@@ -174,6 +186,7 @@ void dodajNowyKontakt (vector <Adresat>& adresaci)
     fstream plik;
     plik.open("Ksiazka adresowa.txt",ios::out | ios::app);
     plik<<adresaci[liczbaKontaktow].idAdresata<<"|";
+    plik<<idZalogowanegoUzytkownika<<"|";
     plik<<adresaci[liczbaKontaktow].imie<<"|";
     plik<<adresaci[liczbaKontaktow].nazwisko<<"|";
     plik<<adresaci[liczbaKontaktow].numerTelefonu<<"|";
@@ -405,7 +418,7 @@ int main()
             else if (wybor=='2')
             {
                 idZalogowanegoUzytkownika = logowanie(uzytkownicy);
-                wczytajKsiazkeAdresowa(adresaci);
+                wczytajKsiazkeAdresowa(adresaci, idZalogowanegoUzytkownika);
             }
             else if (wybor=='9')
             {
@@ -427,7 +440,9 @@ int main()
             cin>>wybor;
             if (wybor== '1')
             {
-                dodajNowyKontakt(adresaci);
+                int ostatniId = 0;
+                ostatniId = znajdzOstatnieId();
+                dodajNowyKontakt(adresaci, idZalogowanegoUzytkownika, ostatniId);
             }
             else if (wybor=='2')
             {
@@ -462,7 +477,6 @@ int main()
                 adresaci.clear();
             }
         }
-
     }
     return 0;
 }
