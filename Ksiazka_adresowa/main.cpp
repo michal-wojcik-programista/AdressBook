@@ -15,8 +15,8 @@ struct Adresat
 };
 struct Uzytkownik
 {
-    int idUzytkownika;
-    string nazwa, haslo;
+    int idUzytkownika=0;
+    string nazwa="", haslo="";
 };
 int rejestracja(vector <Uzytkownik>& uzytkownicy)
 {
@@ -52,13 +52,43 @@ int rejestracja(vector <Uzytkownik>& uzytkownicy)
     cout<< "Konto zalozone";
     Sleep(1000);
 }
+void wczytajUzytkownikow (vector <Uzytkownik>& uzytkownicy)
+{
+    string linia;
+    fstream plik;
+    plik.open("Uzytkownicy.txt", ios::in);
+    if (plik.good()==false)
+    {
+        cout<<"Nie znaleziono lub nie udalo sie otworzyc pliku Uzytkownicy.txt"<<endl;
+        Sleep(1000);
+    }
+    else
+    {
+        while(getline(plik, linia))
+        {
+            Uzytkownik bufor;
+            vector<string> uzytkownicyZpliku;
+            stringstream liniaDoPodzielenia {linia};
+            string wyraz;
+            while(getline(liniaDoPodzielenia, wyraz, '|'))
+            {
+                uzytkownicyZpliku.push_back(wyraz);
+            }
+            bufor.idUzytkownika = atoi(uzytkownicyZpliku[0].c_str());
+            bufor.nazwa = uzytkownicyZpliku[1];
+            bufor.haslo = uzytkownicyZpliku[2];
+            uzytkownicy.push_back(bufor);
+            uzytkownicyZpliku.clear();
+        }
+        plik.close();
+    }
+}
 /*
-int logowanie(Uzytkownik uzytkownicy[])
+int logowanie(Uzytkownik>& uzytkownicy)
 {
     string nazwa, haslo;
     cout<<"Podaj login: ";
     cin>>nazwa;
-
     int i=0;
     while (i<iloscUzytkownikow)
     {
@@ -83,12 +113,10 @@ int logowanie(Uzytkownik uzytkownicy[])
     }
     cout<< "Nie ma uzytkownika z takim loginem" <<endl;
     Sleep(1000);
-    return 0;
 }
 */
 void wczytajKsiazkeAdresowa (vector <Adresat>& adresaci)
 {
-    int ileKontakow=0;
     string linia;
     fstream plik;
     plik.open("Ksiazka adresowa.txt", ios::in);
@@ -315,7 +343,7 @@ void edytujKontakt (vector <Adresat>& adresaci)
         system("cls");
 }
 /*
-void zmianaHasla(Uzytkownik uzytkownicy[], int iloscUzytkownikow, int idZalogowanegoUzytkownika)
+void zmianaHasla(vector <Uzytkownik>& uzytkownicy, int iloscUzytkownikow, int idZalogowanegoUzytkownika)
 {
     string haslo;
     cout<< "Podaj nowe haslo: ";
@@ -323,7 +351,7 @@ void zmianaHasla(Uzytkownik uzytkownicy[], int iloscUzytkownikow, int idZalogowa
 
     for (int i=0; i<iloscUzytkownikow; i++)
     {
-        if (uzytkownicy[i].id == idZalogowanegoUzytkownika)
+        if (uzytkownicy[i].idUzytkownika == idZalogowanegoUzytkownika)
         {
             uzytkownicy[i].haslo = haslo;
             cout<< "Haslo zostalo zmienione" <<endl;
@@ -357,8 +385,8 @@ int main()
     vector <Uzytkownik> uzytkownicy;
     int idZalogowanegoUzytkownika = 0;
     int iloscUzytkownikow = 0;
+    wczytajUzytkownikow(uzytkownicy);
     char wybor;
-
     while(true)
     {
         if (idZalogowanegoUzytkownika == 0)
@@ -376,7 +404,6 @@ int main()
             else if (wybor=='2')
             {
                 //logowanie(uzytkownicy);
-                //wczytajUzytkownikow(uzytkownicy);
                 wczytajKsiazkeAdresowa(adresaci);
                 idZalogowanegoUzytkownika++;
             }
@@ -426,7 +453,7 @@ int main()
             }
             else if (wybor=='7')
             {
-                //zmianaHasla(uzytkownicy,iloscUzytkownikow, idZalogowanegoUzytkownika);
+                //zmianaHasla(uzytkownicy, idZalogowanegoUzytkownika);
             }
             else if (wybor=='9')
             {
