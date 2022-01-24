@@ -122,7 +122,7 @@ int wczytajKsiazkeAdresowa (vector <Adresat>& adresaci, int idZalogowanegoUzytko
     int ostatniNumerId = 0;
     string linia;
     fstream plik;
-    plik.open("Ksiazka adresowa.txt", ios::in);
+    plik.open("Adresaci.txt", ios::in);
     if (plik.good()==false)
     {
         cout<<"Nie znaleziono lub nie udalo sie otworzyc pliku Ksiazka adresowa!"<<endl;
@@ -177,7 +177,7 @@ void dodajNowyKontakt (vector <Adresat>& adresaci, int idZalogowanegoUzytkownika
     cin.sync();
     getline(cin,adresaci[liczbaKontaktow].adres);
     fstream plik;
-    plik.open("Ksiazka adresowa.txt",ios::out | ios::app);
+    plik.open("Adresaci.txt",ios::out | ios::app);
     plik<<adresaci[liczbaKontaktow].idAdresata<<"|";
     plik<<idZalogowanegoUzytkownika<<"|";
     plik<<adresaci[liczbaKontaktow].imie<<"|";
@@ -228,9 +228,37 @@ void wyswietlWszystkieKontakty(vector <Adresat> adresaci)
     }
     system("pause");
 }
+void zapiszUsuniecieWPlikuAdresaci (vector <Adresat>& adresaci, int idDoUsuniecia)
+{
+    string linia;
+    fstream plikAdresaci;
+    fstream plikAdresaciTymczasowy;
+    plikAdresaci.open("Adresaci.txt",ios::in);
+    plikAdresaciTymczasowy.open("Adresaci_tymczasowy.txt",ios::out | ios::app);
+    while(getline(plikAdresaci, linia))
+    {
+        vector<string> adresyZpliku;
+        stringstream liniaDoPodzielenia {linia};
+        string wyraz;
+        while(getline(liniaDoPodzielenia, wyraz, '|'))
+        {
+            adresyZpliku.push_back(wyraz);
+        }
+        if (atoi(adresyZpliku[0].c_str()) != idDoUsuniecia)
+        {
+            plikAdresaciTymczasowy<<linia<<endl;
+        }
+        adresyZpliku.clear();
+    }
+    plikAdresaci.close();
+    plikAdresaciTymczasowy.close();
+    remove("Adresaci.txt");
+    rename("Adresaci_tymczasowy.txt", "Adresaci.txt");
+    cout<< "Zapisano zmiany w pliku Adresaci.txt.";
+    Sleep(1000);
+}
 void usunKontakt (vector <Adresat>& adresaci)
 {
-    system("cls");
     int idDoUsuniecia;
     cout<<"Podaj numer ID adresata w celu jego usuniecia: ";
     cin>>idDoUsuniecia;
@@ -252,14 +280,63 @@ void usunKontakt (vector <Adresat>& adresaci)
             if (iter->idAdresata == idDoUsuniecia)
             {
                 iter = adresaci.erase(iter);
+                zapiszUsuniecieWPlikuAdresaci(adresaci, idDoUsuniecia);
                 break;
             }
         }
     }
     else if (wybor != 't')
     {
-        system("cls");
+        return;
     }
+}
+void zapiszEdycjeWPlikuAdresaci (vector <Adresat>& adresaci, int idDoEdycji)
+{
+    string linia;
+    fstream plikAdresaci;
+    fstream plikAdresaciTymczasowy;
+    plikAdresaci.open("Adresaci.txt",ios::in);
+    plikAdresaciTymczasowy.open("Adresaci_tymczasowy.txt",ios::out | ios::app);
+    while(getline(plikAdresaci, linia))
+    {
+        vector<string> adresyZpliku;
+        stringstream liniaDoPodzielenia {linia};
+        string wyraz;
+        while(getline(liniaDoPodzielenia, wyraz, '|'))
+        {
+            adresyZpliku.push_back(wyraz);
+        }
+        if (atoi(adresyZpliku[0].c_str()) != idDoEdycji)
+        {
+            plikAdresaciTymczasowy<<linia<<endl;
+        }
+        else
+        {
+            for (int i=0; i<adresaci.size(); i++)
+            {
+                if (adresaci[i].idAdresata == idDoEdycji)
+                {
+                    plikAdresaciTymczasowy<<adresaci[i].idAdresata<<"|";
+                    plikAdresaciTymczasowy<<adresyZpliku[1]<<"|";
+                    plikAdresaciTymczasowy<<adresaci[i].imie<<"|";
+                    plikAdresaciTymczasowy<<adresaci[i].nazwisko<<"|";
+                    plikAdresaciTymczasowy<<adresaci[i].numerTelefonu<<"|";
+                    plikAdresaciTymczasowy<<adresaci[i].email<<"|";
+                    plikAdresaciTymczasowy<<adresaci[i].adres<<"|"<<endl;
+                }
+            }
+        }
+        adresyZpliku.clear();
+    }
+    plikAdresaci.close();
+    plikAdresaciTymczasowy.close();
+    system("pause");
+    remove("Adresaci.txt");
+    system("pause");
+    rename("Adresaci_tymczasowy.txt", "Adresaci.txt");
+    system("pause");
+    cout<< "Zapisano zmiany w pliku Adresaci.txt.";
+    Sleep(1000);
 }
 void edytujWybraneDane(vector <Adresat>& adresaci, string noweDane, char ktoreDane, int idDoEdycji)
 {
@@ -289,10 +366,10 @@ void edytujWybraneDane(vector <Adresat>& adresaci, string noweDane, char ktoreDa
             }
         }
     }
+    zapiszEdycjeWPlikuAdresaci(adresaci, idDoEdycji);
 }
 void edytujKontakt (vector <Adresat>& adresaci)
 {
-    system("cls");
     int idDoEdycji;
     string noweDane;
     char wybor;
@@ -348,25 +425,7 @@ void edytujKontakt (vector <Adresat>& adresaci)
         edytujWybraneDane(adresaci, noweDane, wybor, idDoEdycji);
     }
     else if (wybor=='6')
-        system("cls");
-}
-void zapiszZmianyWPlikuAdresaci (vector <Adresat>& adresaci)
-{
-    int liczbaKontaktow = adresaci.size();
-    fstream plik;
-    plik.open("Ksiazka adresowa.txt",ios::out | ios::trunc);
-    for (int i=0; i<liczbaKontaktow; i++)
-    {
-        plik<<adresaci[i].idAdresata<<"|";
-        plik<<adresaci[i].imie<<"|";
-        plik<<adresaci[i].nazwisko<<"|";
-        plik<<adresaci[i].numerTelefonu<<"|";
-        plik<<adresaci[i].email<<"|";
-        plik<<adresaci[i].adres<<"|"<<endl;
-    }
-    plik.close();
-    cout<< "Zapisano zmiany w pliku Adresaci.txt.";
-    Sleep(1000);
+        return;
 }
 void zmianaHasla(vector <Uzytkownik>& uzytkownicy, int idZalogowanegoUzytkownika)
 {
@@ -466,12 +525,10 @@ int main()
             else if (wybor=='5')
             {
                 usunKontakt(adresaci);
-                zapiszZmianyWPlikuAdresaci(adresaci);
             }
             else if (wybor=='6')
             {
                 edytujKontakt(adresaci);
-                zapiszZmianyWPlikuAdresaci(adresaci);
             }
             else if (wybor=='7')
             {
