@@ -117,8 +117,9 @@ int logowanie(vector <Uzytkownik>& uzytkownicy)
     Sleep(1000);
     return 0;
 }
-void wczytajKsiazkeAdresowa (vector <Adresat>& adresaci, int idZalogowanegoUzytkownika)
+int wczytajKsiazkeAdresowa (vector <Adresat>& adresaci, int idZalogowanegoUzytkownika)
 {
+    int ostatniNumerId = 0;
     string linia;
     fstream plik;
     plik.open("Ksiazka adresowa.txt", ios::in);
@@ -140,6 +141,8 @@ void wczytajKsiazkeAdresowa (vector <Adresat>& adresaci, int idZalogowanegoUzytk
             {
                 adresyZpliku.push_back(wyraz);
             }
+            ostatniNumerId = atoi(adresyZpliku[0].c_str());
+            cout<<ostatniNumerId<<" ";
             if (atoi(adresyZpliku[1].c_str()) == idZalogowanegoUzytkownika)
             {
                 bufor.idAdresata = atoi(adresyZpliku[0].c_str());
@@ -154,21 +157,14 @@ void wczytajKsiazkeAdresowa (vector <Adresat>& adresaci, int idZalogowanegoUzytk
             else adresyZpliku.clear();
         }
         plik.close();
+        cout<<ostatniNumerId<<" ";
+        system("pause");
+        return ostatniNumerId;
     }
-}
-int znajdzOstatnieId ()
-{
-    string wyraz;
-    fstream plik;
-    plik.open("Ksiazka adresowa.txt", ios::in);
-    plik.seekg(-2, std:ios_base::end);
-
 }
 void dodajNowyKontakt (vector <Adresat>& adresaci, int idZalogowanegoUzytkownika, int ostatniId)
 {
     int liczbaKontaktow = adresaci.size();
-    if (adresaci.size() == 0) ostatniId = 0;
-    else ostatniId = adresaci.back().idAdresata;
     adresaci.push_back(Adresat());
     adresaci[liczbaKontaktow].idAdresata = ostatniId+1;
     cout<<"Podaj imie: ";
@@ -399,6 +395,7 @@ int main()
     vector <Adresat> adresaci;
     vector <Uzytkownik> uzytkownicy;
     int idZalogowanegoUzytkownika = 0;
+    int ostatniId = 0;
     wczytajUzytkownikow(uzytkownicy);
     char wybor;
     while(true)
@@ -418,7 +415,9 @@ int main()
             else if (wybor=='2')
             {
                 idZalogowanegoUzytkownika = logowanie(uzytkownicy);
-                wczytajKsiazkeAdresowa(adresaci, idZalogowanegoUzytkownika);
+                ostatniId = wczytajKsiazkeAdresowa(adresaci, idZalogowanegoUzytkownika);
+                cout<<ostatniId<<" ";
+                system("pause");
             }
             else if (wybor=='9')
             {
@@ -440,8 +439,6 @@ int main()
             cin>>wybor;
             if (wybor== '1')
             {
-                int ostatniId = 0;
-                ostatniId = znajdzOstatnieId();
                 dodajNowyKontakt(adresaci, idZalogowanegoUzytkownika, ostatniId);
             }
             else if (wybor=='2')
