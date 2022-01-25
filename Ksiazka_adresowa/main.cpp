@@ -510,6 +510,7 @@ int main()
             if (wybor== '1')
             {
                 dodajNowyKontakt(adresaci, idZalogowanegoUzytkownika, ostatniId);
+                ostatniId++;
             }
             else if (wybor=='2')
             {
