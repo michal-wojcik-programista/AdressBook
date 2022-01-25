@@ -128,6 +128,7 @@ int wczytajKsiazkeAdresowa (vector <Adresat>& adresaci, int idZalogowanegoUzytko
         cout<<"Nie znaleziono lub nie udalo sie otworzyc pliku Ksiazka adresowa!"<<endl;
         cout<<"Nowy plik zostanie utworzony przy dodawaniu pierwszego adresata"<<endl;
         Sleep(1000);
+        return 0;
     }
     else
     {
@@ -487,6 +488,8 @@ int main()
             {
                 idZalogowanegoUzytkownika = logowanie(uzytkownicy);
                 ostatniId = wczytajKsiazkeAdresowa(adresaci, idZalogowanegoUzytkownika);
+                cout<<ostatniId<<endl;
+                system("pause");
             }
             else if (wybor=='9')
             {
