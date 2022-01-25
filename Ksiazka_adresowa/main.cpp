@@ -488,8 +488,6 @@ int main()
             {
                 idZalogowanegoUzytkownika = logowanie(uzytkownicy);
                 ostatniId = wczytajKsiazkeAdresowa(adresaci, idZalogowanegoUzytkownika);
-                cout<<ostatniId<<endl;
-                system("pause");
             }
             else if (wybor=='9')
             {
